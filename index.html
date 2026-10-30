@@ -1,0 +1,1725 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Smart Filipino Pantry Planner</title>
+
+<style>
+:root {
+    --green: #42634c;
+    --green-light: #e9f0e7;
+    --cream: #f7f5ef;
+    --orange: #c17b45;
+    --red: #a34435;
+    --border: #e3e5dc;
+    --text: #333a34;
+    --muted: #747b73;
+}
+
+* { box-sizing: border-box; }
+
+body {
+    margin: 0;
+    padding: 18px;
+    background: var(--cream);
+    color: var(--text);
+    font-family: Arial, sans-serif;
+    line-height: 1.5;
+}
+
+.container {
+    max-width: 1000px;
+    margin: auto;
+}
+
+header {
+    padding: 25px 10px;
+    text-align: center;
+}
+
+header h1 {
+    color: var(--green);
+    margin-bottom: 5px;
+}
+
+header p {
+    color: var(--muted);
+}
+
+.date {
+    font-weight: bold;
+    margin-top: 12px;
+}
+
+.card {
+    background: white;
+    padding: 22px;
+    border-radius: 14px;
+    border: 1px solid var(--border);
+    margin-bottom: 20px;
+}
+
+h2 {
+    font-size: 21px;
+    color: var(--green);
+    margin-top: 0;
+}
+
+h3 {
+    font-size: 17px;
+    margin-top: 0;
+}
+
+.small, .muted {
+    font-size: 13px;
+    color: var(--muted);
+}
+
+label {
+    display: block;
+    font-size: 14px;
+    margin-bottom: 5px;
+}
+
+input, select {
+    width: 100%;
+    padding: 11px;
+    border: 1px solid #d5dbd2;
+    border-radius: 8px;
+    font: inherit;
+    background: white;
+    min-width: 0;
+}
+
+input:focus, select:focus {
+    outline: 2px solid #b6cbb3;
+}
+
+button {
+    font: inherit;
+    cursor: pointer;
+    border: 0;
+    border-radius: 8px;
+    padding: 10px 13px;
+}
+
+.primary {
+    background: var(--green);
+    color: white;
+}
+
+.primary:hover {
+    background: #304b37;
+}
+
+.secondary {
+    background: var(--green-light);
+    color: var(--green);
+}
+
+.danger {
+    background: #f7e9e5;
+    color: var(--red);
+}
+
+button:disabled {
+    opacity: .45;
+    cursor: not-allowed;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.field {
+    min-width: 0;
+}
+
+.full {
+    grid-column: 1 / -1;
+}
+
+.form-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 14px;
+    flex-wrap: wrap;
+}
+
+.checkline {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    margin-top: 12px;
+}
+
+.checkline input {
+    width: 18px;
+    height: 18px;
+}
+
+.checkline label {
+    margin: 0;
+}
+
+.tag-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 15px;
+}
+
+.tag {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 10px;
+    border-radius: 8px;
+    background: var(--green-light);
+    font-size: 13px;
+    overflow-wrap: anywhere;
+}
+
+.tag.leftover {
+    background: #fff0d9;
+}
+
+.tag button {
+    background: transparent;
+    color: var(--red);
+    padding: 0 3px;
+}
+
+.toolbar {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin: 12px 0;
+}
+
+.toolbar input {
+    flex: 1;
+    min-width: 160px;
+}
+
+.recipe-card {
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 15px;
+    margin-top: 12px;
+}
+
+.recipe-card h3 {
+    color: var(--green);
+    margin-bottom: 6px;
+}
+
+.badge {
+    display: inline-block;
+    font-size: 12px;
+    padding: 4px 8px;
+    border-radius: 5px;
+    margin: 5px 4px 5px 0;
+    background: #eee;
+}
+
+.badge.ready {
+    color: #286437;
+    background: #e1f2e1;
+}
+
+.badge.partial {
+    color: #84591b;
+    background: #fff0d9;
+}
+
+.badge.left {
+    color: #754b13;
+    background: #ffebc7;
+}
+
+.recipe-actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 12px;
+}
+
+.ingredient-list {
+    padding-left: 20px;
+}
+
+.ingredient-list li {
+    margin: 7px 0;
+}
+
+.missing {
+    color: var(--red);
+}
+
+.available {
+    color: var(--green);
+}
+
+.shopping-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 0;
+    border-bottom: 1px solid #eee;
+}
+
+.shopping-row input {
+    width: 18px;
+    height: 18px;
+}
+
+.shopping-row span {
+    flex: 1;
+    overflow-wrap: anywhere;
+}
+
+.shopping-row.done span {
+    text-decoration: line-through;
+    color: #999;
+}
+
+.day-plan {
+    display: grid;
+    grid-template-columns: 125px minmax(0, 1fr) auto;
+    gap: 10px;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid #eee;
+}
+
+.day-name {
+    font-weight: bold;
+    font-size: 14px;
+}
+
+.empty {
+    color: var(--muted);
+    font-size: 14px;
+    padding: 10px 0;
+}
+
+.notice {
+    background: #f3f5ef;
+    border-radius: 8px;
+    padding: 12px;
+    font-size: 13px;
+    margin-top: 12px;
+}
+
+footer {
+    text-align: center;
+    color: var(--muted);
+    padding: 12px;
+    font-size: 13px;
+}
+
+@media (max-width: 600px) {
+    body { padding: 10px; }
+    .card { padding: 16px; }
+    .grid { grid-template-columns: 1fr; }
+    .full { grid-column: auto; }
+
+    .day-plan {
+        grid-template-columns: 1fr;
+        gap: 6px;
+    }
+
+    .day-plan button {
+        justify-self: start;
+    }
+}
+</style>
+</head>
+
+<body>
+<div class="container">
+
+<header>
+    <h1>My Pantry Planner</h1>
+    <p>Plan meals, use leftovers, save money, and shop smarter.</p>
+    <div class="date" id="today"></div>
+</header>
+
+
+<!-- 1. PANTRY -->
+
+<section class="card">
+    <h2>1. My Pantry</h2>
+    <p class="muted">
+        Record ingredients, quantities, and cooked leftovers.
+        For example: chicken, 500, grams.
+    </p>
+
+    <div class="grid">
+        <div class="field">
+            <label for="ingredientName">Ingredient</label>
+            <input id="ingredientName"
+                   placeholder="e.g. chicken, carrot, rice">
+        </div>
+
+        <div class="field">
+            <label for="ingredientQty">Quantity</label>
+            <input id="ingredientQty" type="number"
+                   min="0.01" step="any" value="1">
+        </div>
+
+        <div class="field">
+            <label for="ingredientUnit">Unit</label>
+            <select id="ingredientUnit">
+                <option value="pcs">pieces</option>
+                <option value="g">grams</option>
+                <option value="kg">kilograms</option>
+                <option value="ml">milliliters</option>
+                <option value="L">liters</option>
+                <option value="cup">cups</option>
+                <option value="tbsp">tablespoons</option>
+                <option value="tsp">teaspoons</option>
+                <option value="pack">packs</option>
+                <option value="clove">cloves</option>
+                <option value="bunch">bunches</option>
+                <option value="can">cans</option>
+                <option value="bottle">bottles</option>
+                <option value="portion">portions</option>
+            </select>
+        </div>
+
+        <div class="field">
+            <label for="ingredientExpiry">Use-by date (optional)</label>
+            <input id="ingredientExpiry" type="date">
+        </div>
+    </div>
+
+    <div class="checkline">
+        <input id="ingredientLeftover" type="checkbox">
+        <label for="ingredientLeftover">
+            This is cooked food or a leftover
+        </label>
+    </div>
+
+    <div class="form-actions">
+        <button class="primary" id="addIngredient">
+            Add to Pantry
+        </button>
+    </div>
+
+    <div id="pantryList" class="tag-list"></div>
+    <p id="pantryEmpty" class="empty">
+        Your pantry is empty. Add your first ingredient.
+    </p>
+</section>
+
+
+<!-- 2. RECIPE FINDER -->
+
+<section class="card">
+    <h2>2. What Can I Cook?</h2>
+
+    <p class="muted">
+        Search by ingredient or recipe name. Recipes you can
+        make appear separately from recipes needing more items.
+    </p>
+
+    <div class="toolbar">
+        <input id="recipeSearch"
+               placeholder="Search carrot, chicken, adobo...">
+
+        <button class="primary" id="searchRecipes">
+            Search
+        </button>
+    </div>
+
+    <div class="toolbar">
+        <button class="secondary" id="readyRecipes">
+            Recipes I Can Make
+        </button>
+
+        <button class="secondary" id="leftoverRecipes">
+            Use My Leftovers
+        </button>
+
+        <button class="secondary" id="allRecipes">
+            All Recipes
+        </button>
+    </div>
+
+    <div id="recipeResults"></div>
+</section>
+
+
+<!-- 3. MEAL PLANNER -->
+
+<section class="card">
+    <h2>3. My Weekly Meal Plan</h2>
+
+    <p class="muted">
+        Choose meals for the next seven days.
+        Missing ingredients from your planned recipes
+        will be combined in your grocery list.
+    </p>
+
+    <div id="mealPlan"></div>
+
+    <div class="form-actions">
+        <button class="primary" id="buildGroceries">
+            Update Grocery List from Meal Plan
+        </button>
+
+        <button class="secondary" id="clearPlan">
+            Clear Meal Plan
+        </button>
+    </div>
+
+    <div id="planMessage" class="notice" hidden></div>
+</section>
+
+
+<!-- 4. RECIPE DETAILS -->
+
+<section class="card">
+    <h2>4. Recipe Ingredients</h2>
+
+    <label for="recipeSelect">Choose a recipe</label>
+
+    <select id="recipeSelect">
+        <option value="">Select a recipe</option>
+    </select>
+
+    <div id="recipeDetails"></div>
+</section>
+
+
+<!-- 5. GROCERY LIST -->
+
+<section class="card">
+    <h2>5. My Grocery List</h2>
+
+    <p class="muted">
+        Your planned meals' missing ingredients are combined
+        where possible. You can also add grocery items manually.
+    </p>
+
+    <div class="grid">
+        <div class="field">
+            <label for="groceryName">Grocery item</label>
+            <input id="groceryName" placeholder="e.g. fish sauce">
+        </div>
+
+        <div class="field">
+            <label for="groceryQty">Quantity</label>
+            <input id="groceryQty" type="number"
+                   min="0.01" step="any" value="1">
+        </div>
+
+        <div class="field">
+            <label for="groceryUnit">Unit</label>
+            <select id="groceryUnit">
+                <option value="pcs">pieces</option>
+                <option value="g">grams</option>
+                <option value="kg">kilograms</option>
+                <option value="ml">milliliters</option>
+                <option value="L">liters</option>
+                <option value="cup">cups</option>
+                <option value="tbsp">tablespoons</option>
+                <option value="tsp">teaspoons</option>
+                <option value="pack">packs</option>
+                <option value="clove">cloves</option>
+                <option value="bunch">bunches</option>
+                <option value="can">cans</option>
+                <option value="bottle">bottles</option>
+                <option value="portion">portions</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="form-actions">
+        <button class="primary" id="addGrocery">
+            Add Grocery
+        </button>
+    </div>
+
+    <div id="shoppingList"></div>
+
+    <div class="form-actions">
+        <button class="secondary" id="removePurchased">
+            Remove Purchased Items
+        </button>
+
+        <button class="secondary" id="exportGroceries">
+            Download Grocery List
+        </button>
+    </div>
+</section>
+
+
+<footer>
+    Made for everyday Filipino households.
+</footer>
+
+</div>
+
+
+<script>
+
+// ===========================================
+// RECIPE DATABASE
+// Quantities are approximate starting amounts
+// for one household serving.
+// ===========================================
+
+const recipes = [
+{
+    name: "Chicken Adobo",
+    ingredients: [
+        ["chicken", 250, "g"],
+        ["soy sauce", 2, "tbsp"],
+        ["vinegar", 2, "tbsp"],
+        ["garlic", 3, "clove"],
+        ["black pepper", 1, "tsp"],
+        ["bay leaf", 2, "pcs"]
+    ],
+    leftoverFriendly: false,
+    instructions:
+        "Simmer chicken with soy sauce, vinegar, garlic, " +
+        "black pepper, bay leaf, and a little water until cooked."
+},
+{
+    name: "Chicken Tinola",
+    ingredients: [
+        ["chicken", 250, "g"],
+        ["ginger", 20, "g"],
+        ["garlic", 2, "clove"],
+        ["onion", 1, "pcs"],
+        ["sayote", 1, "pcs"],
+        ["malunggay", 1, "bunch"],
+        ["fish sauce", 1, "tbsp"]
+    ],
+    leftoverFriendly: false,
+    instructions:
+        "Saute ginger, garlic, and onion. Add chicken and water. " +
+        "Simmer until cooked, then add sayote and malunggay."
+},
+{
+    name: "Chicken Sinigang",
+    ingredients: [
+        ["chicken", 250, "g"],
+        ["tomato", 2, "pcs"],
+        ["onion", 1, "pcs"],
+        ["radish", 100, "g"],
+        ["kangkong", 1, "bunch"],
+        ["tamarind soup mix", 1, "pack"],
+        ["fish sauce", 1, "tbsp"]
+    ],
+    leftoverFriendly: false,
+    instructions:
+        "Boil chicken with onion and tomato. Add radish and " +
+        "sour soup mix. Cook thoroughly and add kangkong."
+},
+{
+    name: "Pork Adobo",
+    ingredients: [
+        ["pork", 250, "g"],
+        ["soy sauce", 2, "tbsp"],
+        ["vinegar", 2, "tbsp"],
+        ["garlic", 3, "clove"],
+        ["black pepper", 1, "tsp"],
+        ["bay leaf", 2, "pcs"]
+    ],
+    leftoverFriendly: false,
+    instructions:
+        "Simmer pork with soy sauce, vinegar, garlic, pepper, " +
+        "bay leaf, and water until tender."
+},
+{
+    name: "Pork Sinigang",
+    ingredients: [
+        ["pork", 250, "g"],
+        ["tomato", 2, "pcs"],
+        ["onion", 1, "pcs"],
+        ["radish", 100, "g"],
+        ["kangkong", 1, "bunch"],
+        ["tamarind soup mix", 1, "pack"]
+    ],
+    leftoverFriendly: false,
+    instructions:
+        "Boil pork until tender. Add tomato, onion, radish, " +
+        "and sour soup mix. Add kangkong near the end."
+},
+{
+    name: "Ginisang Monggo",
+    ingredients: [
+        ["mung beans", 100, "g"],
+        ["garlic", 3, "clove"],
+        ["onion", 1, "pcs"],
+        ["tomato", 2, "pcs"],
+        ["malunggay", 1, "bunch"],
+        ["fish sauce", 1, "tbsp"]
+    ],
+    leftoverFriendly: false,
+    instructions:
+        "Boil mung beans until soft. Saute garlic, onion, " +
+        "and tomato. Combine, simmer, and add malunggay."
+},
+{
+    name: "Tortang Talong",
+    ingredients: [
+        ["eggplant", 1, "pcs"],
+        ["egg", 2, "pcs"],
+        ["garlic", 1, "clove"],
+        ["cooking oil", 2, "tbsp"],
+        ["salt", 1, "tsp"]
+    ],
+    leftoverFriendly: false,
+    instructions:
+        "Roast eggplant until soft, peel, flatten, dip in beaten " +
+        "egg, and fry until cooked."
+},
+{
+    name: "Ginisang Sayote",
+    ingredients: [
+        ["sayote", 2, "pcs"],
+        ["garlic", 2, "clove"],
+        ["onion", 1, "pcs"],
+        ["tomato", 1, "pcs"],
+        ["cooking oil", 1, "tbsp"],
+        ["fish sauce", 1, "tsp"]
+    ],
+    leftoverFriendly: false,
+    instructions:
+        "Saute garlic, onion, and tomato. Add sliced sayote " +
+        "and cook until tender."
+},
+{
+    name: "Chicken Fried Rice",
+    ingredients: [
+        ["cooked chicken", 150, "g"],
+        ["cooked rice", 2, "cup"],
+        ["egg", 1, "pcs"],
+        ["garlic", 3, "clove"],
+        ["carrot", 1, "pcs"],
+        ["soy sauce", 1, "tbsp"],
+        ["cooking oil", 1, "tbsp"]
+    ],
+    leftoverFriendly: true,
+    instructions:
+        "Saute garlic and carrot. Add cooked chicken, rice, " +
+        "and beaten egg. Stir-fry with soy sauce until hot."
+},
+{
+    name: "Chicken Sandwich",
+    ingredients: [
+        ["cooked chicken", 100, "g"],
+        ["bread", 2, "pcs"],
+        ["mayonnaise", 2, "tbsp"],
+        ["onion", 0.25, "pcs"],
+        ["lettuce", 2, "pcs"]
+    ],
+    leftoverFriendly: true,
+    instructions:
+        "Shred cooked chicken and mix with mayonnaise and onion. " +
+        "Serve in bread with lettuce."
+},
+{
+    name: "Chicken Vegetable Soup",
+    ingredients: [
+        ["cooked chicken", 150, "g"],
+        ["carrot", 1, "pcs"],
+        ["potato", 1, "pcs"],
+        ["onion", 1, "pcs"],
+        ["garlic", 2, "clove"],
+        ["water", 500, "ml"],
+        ["salt", 1, "tsp"]
+    ],
+    leftoverFriendly: true,
+    instructions:
+        "Simmer vegetables in water until tender. Add cooked " +
+        "chicken and season. Reheat the chicken thoroughly."
+},
+{
+    name: "Garlic Fried Rice",
+    ingredients: [
+        ["cooked rice", 2, "cup"],
+        ["garlic", 4, "clove"],
+        ["cooking oil", 1, "tbsp"],
+        ["salt", 1, "tsp"]
+    ],
+    leftoverFriendly: true,
+    instructions:
+        "Saute minced garlic in oil. Add cooked rice and salt. " +
+        "Stir-fry until steaming hot."
+},
+{
+    name: "Carrot and Potato Soup",
+    ingredients: [
+        ["carrot", 2, "pcs"],
+        ["potato", 1, "pcs"],
+        ["onion", 1, "pcs"],
+        ["garlic", 2, "clove"],
+        ["milk", 200, "ml"],
+        ["water", 300, "ml"],
+        ["salt", 1, "tsp"]
+    ],
+    leftoverFriendly: false,
+    instructions:
+        "Boil carrot, potato, onion, and garlic until soft. " +
+        "Blend carefully, add milk, and heat gently."
+},
+{
+    name: "Pancit Canton",
+    ingredients: [
+        ["pancit canton noodles", 200, "g"],
+        ["cabbage", 100, "g"],
+        ["carrot", 1, "pcs"],
+        ["soy sauce", 2, "tbsp"],
+        ["garlic", 2, "clove"],
+        ["onion", 1, "pcs"],
+        ["water", 300, "ml"]
+    ],
+    leftoverFriendly: false,
+    instructions:
+        "Saute garlic and onion. Add vegetables, soy sauce, " +
+        "water, and noodles. Cook according to package directions."
+},
+{
+    name: "Omelet",
+    ingredients: [
+        ["egg", 2, "pcs"],
+        ["tomato", 1, "pcs"],
+        ["onion", 0.5, "pcs"],
+        ["cooking oil", 1, "tbsp"],
+        ["salt", 1, "tsp"]
+    ],
+    leftoverFriendly: false,
+    instructions:
+        "Beat eggs with chopped tomato and onion. Cook in " +
+        "a lightly oiled pan until fully set."
+},
+{
+    name: "Sardines with Misua",
+    ingredients: [
+        ["canned sardines", 1, "can"],
+        ["misua", 50, "g"],
+        ["garlic", 2, "clove"],
+        ["onion", 1, "pcs"],
+        ["water", 400, "ml"]
+    ],
+    leftoverFriendly: false,
+    instructions:
+        "Saute garlic and onion. Add sardines and water. Bring " +
+        "to a simmer, add misua, and cook until soft."
+},
+{
+    name: "Ginisang Repolyo",
+    ingredients: [
+        ["cabbage", 250, "g"],
+        ["carrot", 1, "pcs"],
+        ["garlic", 2, "clove"],
+        ["onion", 1, "pcs"],
+        ["cooking oil", 1, "tbsp"],
+        ["soy sauce", 1, "tbsp"]
+    ],
+    leftoverFriendly: false,
+    instructions:
+        "Saute garlic and onion. Add carrot and cabbage. " +
+        "Season with soy sauce and cook until tender."
+},
+{
+    name: "Pork Menudo",
+    ingredients: [
+        ["pork", 250, "g"],
+        ["potato", 1, "pcs"],
+        ["carrot", 1, "pcs"],
+        ["tomato sauce", 200, "ml"],
+        ["garlic", 2, "clove"],
+        ["onion", 1, "pcs"],
+        ["soy sauce", 1, "tbsp"]
+    ],
+    leftoverFriendly: false,
+    instructions:
+        "Saute garlic and onion. Add pork and soy sauce. Add " +
+        "tomato sauce, water, potato, and carrot. Simmer until tender."
+}
+];
+
+
+// ===========================================
+// STORAGE
+// ===========================================
+
+function load(key, fallback) {
+    try {
+        const value = localStorage.getItem(key);
+        return value === null ? fallback : JSON.parse(value);
+    } catch {
+        return fallback;
+    }
+}
+
+let pantry = load("smartPantry", []);
+let shopping = load("smartShopping", []);
+let mealPlan = load("smartMealPlan", {});
+
+function save() {
+    localStorage.setItem("smartPantry", JSON.stringify(pantry));
+    localStorage.setItem("smartShopping", JSON.stringify(shopping));
+    localStorage.setItem("smartMealPlan", JSON.stringify(mealPlan));
+}
+
+
+// ===========================================
+// DATE
+// ===========================================
+
+function localDate(date) {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+
+    return `${year}-${month}-${day}`;
+}
+
+function showDate() {
+    const today = new Date();
+
+    document.getElementById("today").textContent =
+        new Intl.DateTimeFormat("en-US", {
+            weekday: "short",
+            month: "short",
+            day: "numeric",
+            year: "numeric"
+        }).format(today);
+}
+
+showDate();
+
+
+// ===========================================
+// INGREDIENT NAMES
+// ===========================================
+
+const aliases = {
+    "carrots": "carrot",
+    "potatoes": "potato",
+    "onions": "onion",
+    "tomatoes": "tomato",
+    "eggs": "egg",
+    "chickens": "chicken",
+    "pork meat": "pork",
+    "repolyo": "cabbage",
+    "cabbage": "cabbage",
+    "rice": "cooked rice",
+    "leftover rice": "cooked rice",
+    "leftover chicken": "cooked chicken",
+    "cooked leftover chicken": "cooked chicken",
+    "cooked rice": "cooked rice",
+    "cooked chicken": "cooked chicken",
+    "oil": "cooking oil",
+    "vegetable oil": "cooking oil",
+    "tamarind mix": "tamarind soup mix",
+    "sinigang mix": "tamarind soup mix",
+    "sardines": "canned sardines"
+};
+
+function norm(name) {
+    const value = name.trim().toLowerCase();
+    return aliases[value] || value;
+}
+
+function displayQty(qty) {
+    return Number(Number(qty).toFixed(3)).toString();
+}
+
+
+// ===========================================
+// QUANTITY CONVERSION
+// Convert compatible weight and volume units.
+// Other units are compared only when identical.
+// ===========================================
+
+function toBase(qty, unit) {
+    if (unit === "kg") return qty * 1000;
+    if (unit === "L") return qty * 1000;
+
+    return qty;
+}
+
+function baseUnit(unit) {
+    if (unit === "kg") return "g";
+    if (unit === "L") return "ml";
+
+    return unit;
+}
+
+function sameDimension(a, b) {
+    return baseUnit(a) === baseUnit(b);
+}
+
+function pantryAmount(ingredient) {
+    const target = norm(ingredient);
+
+    let total = 0;
+    let unit = null;
+
+    pantry.forEach(item => {
+        if (norm(item.name) !== target) return;
+
+        if (unit === null) {
+            unit = item.unit;
+        }
+
+        if (sameDimension(unit, item.unit)) {
+            total += toBase(Number(item.qty), item.unit);
+        }
+    });
+
+    return { total, unit };
+}
+
+function ingredientAvailable(ingredient) {
+    const available = pantryAmount(ingredient.name);
+
+    if (available.unit === null) return false;
+
+    if (!sameDimension(available.unit, ingredient.unit)) {
+        // A matching item exists, but the quantities cannot
+        // safely be compared across different unit types.
+        return true;
+    }
+
+    return available.total >=
+        toBase(Number(ingredient.qty), ingredient.unit);
+}
+
+function missingAmount(ingredient) {
+    const available = pantryAmount(ingredient.name);
+
+    if (available.unit === null) {
+        return {
+            qty: Number(ingredient.qty),
+            unit: ingredient.unit
+        };
+    }
+
+    if (!sameDimension(available.unit, ingredient.unit)) {
+        return { qty: 0, unit: ingredient.unit };
+    }
+
+    const needed = toBase(
+        Number(ingredient.qty),
+        ingredient.unit
+    );
+
+    const remaining = Math.max(0, needed - available.total);
+
+    return {
+        qty: remaining,
+        unit: baseUnit(ingredient.unit)
+    };
+}
+
+
+// ===========================================
+// PANTRY MANAGEMENT
+// ===========================================
+
+function addPantryItem() {
+    const name = document.getElementById("ingredientName")
+        .value.trim();
+
+    const qty = Number(
+        document.getElementById("ingredientQty").value
+    );
+
+    const unit = document.getElementById("ingredientUnit").value;
+    const expiry = document.getElementById("ingredientExpiry").value;
+    const leftover = document.getElementById("ingredientLeftover").checked;
+
+    if (!name || !Number.isFinite(qty) || qty <= 0) {
+        alert("Enter an ingredient and a quantity greater than zero.");
+        return;
+    }
+
+    pantry.push({
+        id: crypto.randomUUID(),
+        name: norm(name),
+        qty,
+        unit,
+        expiry,
+        leftover
+    });
+
+    save();
+
+    document.getElementById("ingredientName").value = "";
+    document.getElementById("ingredientQty").value = "1";
+    document.getElementById("ingredientExpiry").value = "";
+    document.getElementById("ingredientLeftover").checked = false;
+
+    renderPantry();
+    renderRecipes();
+    renderRecipeDetails();
+}
+
+document.getElementById("addIngredient")
+    .addEventListener("click", addPantryItem);
+
+document.getElementById("ingredientName")
+    .addEventListener("keydown", event => {
+        if (event.key === "Enter") addPantryItem();
+    });
+
+function removePantryItem(id) {
+    pantry = pantry.filter(item => item.id !== id);
+    save();
+    renderPantry();
+    renderRecipes();
+    renderRecipeDetails();
+}
+
+function renderPantry() {
+    const list = document.getElementById("pantryList");
+    list.replaceChildren();
+
+    document.getElementById("pantryEmpty").hidden =
+        pantry.length > 0;
+
+    pantry.forEach(item => {
+        const tag = document.createElement("div");
+
+        tag.className = "tag" +
+            (item.leftover ? " leftover" : "");
+
+        const label = document.createElement("span");
+
+        label.textContent =
+            `${item.name}: ${displayQty(item.qty)} ${item.unit}` +
+            (item.leftover ? " (leftover)" : "") +
+            (item.expiry ? `; use by ${item.expiry}` : "");
+
+        const remove = document.createElement("button");
+
+        remove.textContent = "Remove";
+        remove.setAttribute("aria-label", "Remove " + item.name);
+
+        remove.addEventListener("click", () => {
+            removePantryItem(item.id);
+        });
+
+        tag.append(label, remove);
+        list.appendChild(tag);
+    });
+}
+
+
+// ===========================================
+// RECIPE MATCHING
+// ===========================================
+
+function missingIngredients(recipe) {
+    return recipe.ingredients.filter(ingredient =>
+        !ingredientAvailable({
+            name: ingredient[0],
+            qty: ingredient[1],
+            unit: ingredient[2]
+        })
+    );
+}
+
+function recipeReady(recipe) {
+    return missingIngredients(recipe).length === 0;
+}
+
+function leftoverMatches(recipe) {
+    return recipe.leftoverFriendly &&
+        pantry.some(item =>
+            item.leftover &&
+            ["cooked chicken", "cooked rice"].includes(norm(item.name))
+        );
+}
+
+function recipeMatchesIngredient(recipe, query) {
+    if (!query) return true;
+
+    return recipe.name.toLowerCase().includes(query) ||
+        recipe.ingredients.some(item =>
+            norm(item[0]).includes(norm(query))
+        );
+}
+
+function renderRecipes(mode = "all", search = "") {
+    const results = document.getElementById("recipeResults");
+    results.replaceChildren();
+
+    const query = search.trim().toLowerCase();
+
+    let matches = recipes.filter(recipe => {
+        if (!recipeMatchesIngredient(recipe, query)) return false;
+
+        if (mode === "ready") return recipeReady(recipe);
+
+        if (mode === "leftover") return leftoverMatches(recipe);
+
+        return true;
+    });
+
+    // When searching for a leftover ingredient, prioritize
+    // recipes that are designed to use cooked leftovers.
+    if (query && mode === "all") {
+        matches.sort((a, b) => {
+            const aLeft = leftoverMatches(a) ? 1 : 0;
+            const bLeft = leftoverMatches(b) ? 1 : 0;
+            return bLeft - aLeft;
+        });
+    }
+
+    if (!matches.length) {
+        const message = document.createElement("p");
+        message.className = "empty";
+
+        message.textContent = mode === "ready"
+            ? "No complete matches yet. Add ingredients to your pantry."
+            : mode === "leftover"
+            ? "No leftover-friendly matches yet. Add cooked chicken or rice and mark it as a leftover."
+            : "No recipes found. Try another ingredient or recipe name.";
+
+        results.appendChild(message);
+        return;
+    }
+
+    matches.forEach(recipe => {
+        const missing = missingIngredients(recipe);
+
+        const card = document.createElement("div");
+        card.className = "recipe-card";
+
+        const title = document.createElement("h3");
+        title.textContent = recipe.name;
+        card.appendChild(title);
+
+        const badge = document.createElement("span");
+        badge.className = "badge " +
+            (missing.length ? "partial" : "ready");
+
+        badge.textContent = missing.length
+            ? `${missing.length} ingredient(s) missing`
+            : "You have the ingredients";
+
+        card.appendChild(badge);
+
+        if (leftoverMatches(recipe)) {
+            const leftBadge = document.createElement("span");
+            leftBadge.className = "badge left";
+            leftBadge.textContent = "Uses your leftovers";
+            card.appendChild(leftBadge);
+        }
+
+        const list = document.createElement("ul");
+        list.className = "ingredient-list";
+
+        recipe.ingredients.forEach(item => {
+            const li = document.createElement("li");
+            const ingredient = {
+                name: item[0],
+                qty: item[1],
+                unit: item[2]
+            };
+
+            li.textContent =
+                `${item[0]} — ${displayQty(item[1])} ${item[2]}`;
+
+            li.className = ingredientAvailable(ingredient)
+                ? "available"
+                : "missing";
+
+            list.appendChild(li);
+        });
+
+        card.appendChild(list);
+
+        const instructions = document.createElement("p");
+        instructions.className = "muted";
+        instructions.textContent = recipe.instructions;
+
+        card.appendChild(instructions);
+
+        const actions = document.createElement("div");
+        actions.className = "recipe-actions";
+
+        const view = document.createElement("button");
+        view.className = "secondary";
+        view.textContent = "View Grocery Ingredients";
+
+        view.addEventListener("click", () => {
+            document.getElementById("recipeSelect").value = recipe.name;
+            renderRecipeDetails();
+
+            document.getElementById("recipeDetails")
+                .scrollIntoView({ behavior: "smooth" });
+        });
+
+        actions.appendChild(view);
+
+        const plan = document.createElement("button");
+        plan.className = "primary";
+        plan.textContent = "Plan This Meal";
+
+        plan.addEventListener("click", () => {
+            const day = prompt(
+                "Choose a day: Mon, Tue, Wed, Thu, Fri, Sat, or Sun"
+            );
+
+            if (!day) return;
+
+            const key = day.trim().slice(0, 3).toLowerCase();
+            const allowed = ["mon", "tue", "wed", "thu", "fri", "sat", "sun"];
+
+            if (!allowed.includes(key)) {
+                alert("Please enter a valid day, such as Mon or Wed.");
+                return;
+            }
+
+            mealPlan[key] = recipe.name;
+            save();
+            renderMealPlan();
+        });
+
+        actions.appendChild(plan);
+
+        card.appendChild(actions);
+        results.appendChild(card);
+    });
+}
+
+document.getElementById("searchRecipes")
+    .addEventListener("click", () => {
+        renderRecipes("all",
+            document.getElementById("recipeSearch").value);
+    });
+
+document.getElementById("recipeSearch")
+    .addEventListener("keydown", event => {
+        if (event.key === "Enter") {
+            renderRecipes("all", event.target.value);
+        }
+    });
+
+document.getElementById("readyRecipes")
+    .addEventListener("click", () => renderRecipes("ready"));
+
+document.getElementById("leftoverRecipes")
+    .addEventListener("click", () => renderRecipes("leftover"));
+
+document.getElementById("allRecipes")
+    .addEventListener("click", () => {
+        document.getElementById("recipeSearch").value = "";
+        renderRecipes("all");
+    });
+
+
+// ===========================================
+// RECIPE DETAILS
+// ===========================================
+
+function renderRecipeDetails() {
+    const details = document.getElementById("recipeDetails");
+    details.replaceChildren();
+
+    const name = document.getElementById("recipeSelect").value;
+    const recipe = recipes.find(item => item.name === name);
+
+    if (!recipe) return;
+
+    const description = document.createElement("p");
+    description.textContent = recipe.instructions;
+    details.appendChild(description);
+
+    const heading = document.createElement("h3");
+    heading.textContent = "Ingredients for " + recipe.name;
+    details.appendChild(heading);
+
+    const list = document.createElement("ul");
+    list.className = "ingredient-list";
+
+    recipe.ingredients.forEach(item => {
+        const li = document.createElement("li");
+
+        const ingredient = {
+            name: item[0],
+            qty: item[1],
+            unit: item[2]
+        };
+
+        const available = ingredientAvailable(ingredient);
+
+        li.textContent =
+            `${item[0]}: ${displayQty(item[1])} ${item[2]} — ` +
+            (available ? "In pantry" : "Add to grocery list");
+
+        li.className = available ? "available" : "missing";
+
+        list.appendChild(li);
+    });
+
+    details.appendChild(list);
+
+    const button = document.createElement("button");
+    button.className = "primary";
+    button.textContent = "Add Missing Ingredients to Groceries";
+
+    button.addEventListener("click", () => {
+        addRecipeGroceries(recipe);
+    });
+
+    details.appendChild(button);
+}
+
+document.getElementById("recipeSelect")
+    .addEventListener("change", renderRecipeDetails);
+
+
+// ===========================================
+// WEEKLY MEAL PLAN
+// ===========================================
+
+const dayKeys = ["mon", "tue", "wed", "thu", "fri", "sat", "sun"];
+
+function dayLabel(key) {
+    const today = new Date();
+
+    const monday = new Date(
+        today.getFullYear(),
+        today.getMonth(),
+        today.getDate()
+    );
+
+    const offset = (today.getDay() + 6) % 7;
+
+    monday.setDate(monday.getDate() - offset);
+
+    const index = dayKeys.indexOf(key);
+    monday.setDate(monday.getDate() + index);
+
+    return new Intl.DateTimeFormat("en-US", {
+        weekday: "short",
+        month: "short",
+        day: "numeric"
+    }).format(monday);
+}
+
+function renderMealPlan() {
+    const container = document.getElementById("mealPlan");
+    container.replaceChildren();
+
+    dayKeys.forEach(key => {
+        const row = document.createElement("div");
+        row.className = "day-plan";
+
+        const label = document.createElement("div");
+        label.className = "day-name";
+        label.textContent = dayLabel(key);
+
+        const select = document.createElement("select");
+
+        const empty = document.createElement("option");
+        empty.value = "";
+        empty.textContent = "Choose a meal";
+        select.appendChild(empty);
+
+        recipes.forEach(recipe => {
+            const option = document.createElement("option");
+            option.value = recipe.name;
+            option.textContent = recipe.name;
+            select.appendChild(option);
+        });
+
+        select.value = mealPlan[key] || "";
+
+        select.addEventListener("change", () => {
+            if (select.value) {
+                mealPlan[key] = select.value;
+            } else {
+                delete mealPlan[key];
+            }
+
+            save();
+            showPlanMessage("");
+        });
+
+        const clear = document.createElement("button");
+        clear.className = "secondary";
+        clear.textContent = "Clear Day";
+
+        clear.addEventListener("click", () => {
+            delete mealPlan[key];
+            save();
+            renderMealPlan();
+        });
+
+        row.append(label, select, clear);
+        container.appendChild(row);
+    });
+}
+
+function showPlanMessage(message) {
+    const box = document.getElementById("planMessage");
+    box.textContent = message;
+    box.hidden = !message;
+}
+
+document.getElementById("clearPlan")
+    .addEventListener("click", () => {
+        if (!confirm("Clear all seven days of meal planning?")) return;
+
+        mealPlan = {};
+        save();
+        renderMealPlan();
+        showPlanMessage("Your meal plan has been cleared.");
+    });
+
+
+// ===========================================
+// GROCERY LIST
+// ===========================================
+
+function addShoppingItem(name, qty, unit) {
+    const key = norm(name);
+
+    // Combine items with the same normalized name and unit.
+    const existing = shopping.find(item =>
+        norm(item.name) === key && item.unit === unit && !item.checked
+    );
+
+    if (existing) {
+        existing.qty += qty;
+    } else {
+        shopping.push({
+            id: crypto.randomUUID(),
+            name: key,
+            qty,
+            unit,
+            checked: false
+        });
+    }
+}
+
+function addRecipeGroceries(recipe) {
+    let added = 0;
+
+    recipe.ingredients.forEach(item => {
+        const ingredient = {
+            name: item[0],
+            qty: item[1],
+            unit: item[2]
+        };
+
+        const missing = missingAmount(ingredient);
+
+        if (missing.qty > 0) {
+            addShoppingItem(
+                ingredient.name,
+                missing.qty,
+                missing.unit
+            );
+
+            added++;
+        }
+    });
+
+    save();
+    renderShopping();
+
+    alert(added
+        ? "Missing ingredients added to your grocery list."
+        : "No missing ingredients were detected for this recipe.");
+}
+
+document.getElementById("addGrocery")
+    .addEventListener("click", () => {
+        const name = document.getElementById("groceryName")
+            .value.trim();
+
+        const qty = Number(
+            document.getElementById("groceryQty").value
+        );
+
+        const unit = document.getElementById("groceryUnit").value;
+
+        if (!name || !Number.isFinite(qty) || qty <= 0) {
+            alert("Enter a grocery item and a quantity greater than zero.");
+            return;
+        }
+
+        addShoppingItem(name, qty, unit);
+
+        document.getElementById("groceryName").value = "";
+        document.getElementById("groceryQty").value = "1";
+
+        save();
+        renderShopping();
+    });
+
+function buildGroceriesFromPlan() {
+    // Rebuild the unpurchased grocery list from the current
+    // meal plan, combining duplicate ingredients.
+    shopping = shopping.filter(item => item.checked);
+
+    const plannedNames = [...new Set(Object.values(mealPlan))];
+
+    plannedNames.forEach(name => {
+        const recipe = recipes.find(item => item.name === name);
+
+        if (!recipe) return;
+
+        recipe.ingredients.forEach(item => {
+            const ingredient = {
+                name: item[0],
+                qty: item[1],
+                unit: item[2]
+            };
+
+            const missing = missingAmount(ingredient);
+
+            if (missing.qty > 0) {
+                addShoppingItem(
+                    ingredient.name,
+                    missing.qty,
+                    missing.unit
+                );
+            }
+        });
+    });
+
+    save();
+    renderShopping();
+
+    showPlanMessage(
+        plannedNames.length
+            ? "Grocery list updated for " + plannedNames.length +
+              " planned recipe(s). Duplicate ingredients were combined where units match."
+            : "Choose meals in your weekly plan first."
+    );
+}
+
+document.getElementById("buildGroceries")
+    .addEventListener("click", buildGroceriesFromPlan);
+
+function renderShopping() {
+    const list = document.getElementById("shoppingList");
+    list.replaceChildren();
+
+    if (!shopping.length) {
+        const empty = document.createElement("p");
+        empty.className = "empty";
+        empty.textContent = "Your grocery list is empty.";
+        list.appendChild(empty);
+        return;
+    }
+
+    shopping.forEach(item => {
+        const row = document.createElement("div");
+
+        row.className = "shopping-row" +
+            (item.checked ? " done" : "");
+
+        const checkbox = document.createElement("input");
+        checkbox.type = "checkbox";
+        checkbox.checked = item.checked;
+
+        checkbox.addEventListener("change", () => {
+            item.checked = checkbox.checked;
+            save();
+            renderShopping();
+        });
+
+        const label = document.createElement("span");
+        label.textContent =
+            `${item.name}: ${displayQty(item.qty)} ${item.unit}`;
+
+        const remove = document.createElement("button");
+        remove.className = "danger";
+        remove.textContent = "Remove";
+
+        remove.addEventListener("click", () => {
+            shopping = shopping.filter(entry => entry.id !== item.id);
+            save();
+            renderShopping();
+        });
+
+        row.append(checkbox, label, remove);
+        list.appendChild(row);
+    });
+}
+
+document.getElementById("removePurchased")
+    .addEventListener("click", () => {
+        shopping = shopping.filter(item => !item.checked);
+        save();
+        renderShopping();
+    });
+
+document.getElementById("exportGroceries")
+    .addEventListener("click", () => {
+        const lines = [
+            "MY GROCERY LIST",
+            "Generated: " + new Date().toLocaleDateString(),
+            ""
+        ];
+
+        shopping.forEach(item => {
+            lines.push(
+                `${item.checked ? "[x]" : "[ ]"} ${item.name}: ` +
+                `${displayQty(item.qty)} ${item.unit}`
+            );
+        });
+
+        const blob = new Blob(
+            [lines.join("\n")],
+            { type: "text/plain;charset=utf-8" }
+        );
+
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+
+        link.href = url;
+        link.download = "grocery-list.txt";
+        link.click();
+
+        URL.revokeObjectURL(url);
+    });
+
+
+// ===========================================
+// START APP
+// ===========================================
+
+function initialize() {
+    const select = document.getElementById("recipeSelect");
+
+    recipes.forEach(recipe => {
+        const option = document.createElement("option");
+        option.value = recipe.name;
+        option.textContent = recipe.name;
+        select.appendChild(option);
+    });
+
+    renderPantry();
+    renderRecipes();
+    renderMealPlan();
+    renderShopping();
+}
+
+initialize();
+
+</script>
+</body>
+</html>
+```
